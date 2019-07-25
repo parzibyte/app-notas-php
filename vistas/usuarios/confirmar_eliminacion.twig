@@ -1,0 +1,22 @@
+{% extends "master.twig" %}
+{% block titulo %}Eliminar usuario
+{% endblock %}
+{% block contenido %}
+    <main class="container-fluid">
+        <div class="row">
+            <div class="col-12"></div>
+            <div class="col-12 col-sm-6">
+                <h1 class="text-center">Confirmar</h1>
+                <p>
+                    ¿Eliminar usuario con correo
+                    <strong>{{usuario.correo}}</strong>?
+                </p>
+                <form action="{{URL_RAIZ}}/usuarios/eliminar" method="post">
+                    <input type="hidden" name="idUsuario" value="{{usuario.id}}">
+                    <button class="btn btn-danger" type="submit">Eliminar</button>
+                    <a class="btn btn-info" href="{{URL_RAIZ}}/usuarios">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock %}

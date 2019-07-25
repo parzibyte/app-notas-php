@@ -1,0 +1,40 @@
+{% extends "master.twig" %}
+{% block titulo %}Usuarios
+{% endblock %}
+{% block contenido %}
+    <main class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center">Usuarios</h1>
+            </div>
+            <div class="col-12">
+                <a class="btn btn-success mb-2" href="{{URL_RAIZ}}/usuarios/agregar">Agregar</a>
+            </div>
+            <div class="col-12">
+                {% include "componentes/sesion_flash.twig" %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Correo</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in usuarios %}
+                                <tr>
+                                    <td>{{usuario.correo}}</td>
+                                    <td>
+                                        <a class="btn btn-warning" href="{{URL_RAIZ}}/usuarios/eliminar/{{usuario.id}}">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

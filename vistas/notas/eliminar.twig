@@ -1,0 +1,23 @@
+{% extends "master.twig" %}
+{% block titulo %}Eliminar nota
+{% endblock %}
+{% block contenido %}
+    <main class="container-fluid">
+        <div class="row">
+            <div class="col-12"></div>
+            <div class="col-12 col-sm-6">
+                <h1 class="text-center">Confirmar</h1>
+                <p>
+                    ¿Eliminar nota con el siguiente contenido?
+                    <pre>{{nota.contenido}}</pre>
+                </p>
+                <form action="{{URL_RAIZ}}/notas/eliminar" method="post">
+                    <input type="hidden" name="idNota" value="{{nota.id}}">
+                    <button class="btn btn-danger" type="submit">Eliminar</button>
+                    <a class="btn btn-info" href="{{URL_RAIZ}}/notas">Ver notas</a>
+                </form>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}

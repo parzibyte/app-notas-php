@@ -1,0 +1,34 @@
+{% extends "master.twig" %}
+{% block titulo %}Notas
+{% endblock %}
+{% block contenido %}
+    <main class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center">Notas</h1>
+            </div>
+            <div class="col-12">
+                <a class="btn btn-success mb-2" href="{{URL_RAIZ}}/notas/agregar">Agregar</a>
+            </div>
+            <div class="col-12">
+                {% include "componentes/sesion_flash.twig" %}
+                {% for nota in notas %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">{{nota.fecha_hora}}</h5>
+                            <pre>{{nota.contenido}}</pre>
+                            <a class="btn btn-warning" href="{{URL_RAIZ}}/notas/editar/{{nota.id}}">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a class="btn btn-danger" href="{{URL_RAIZ}}/notas/eliminar/{{nota.id}}">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </main>
+
+{% endblock %}

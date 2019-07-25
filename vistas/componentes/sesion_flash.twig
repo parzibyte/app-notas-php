@@ -1,0 +1,6 @@
+{% set tipo, mensaje = sesion_flash("tipo"), sesion_flash("mensaje") %}
+{% if tipo and mensaje %}
+    <div class="mt-3 alert alert-{{ tipo}}">
+        {{mensaje}}
+    </div>
+{% endif %}

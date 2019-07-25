@@ -1,0 +1,19 @@
+{
+    "name": "parzibyte/app-notas-php",
+    "description": "Aplicación de notas con PHP, MySQL, Bootstrap y Twig",
+    "type": "project",
+    "require": {
+        "phroute/phroute": "^2.1",
+        "twig/twig": "^2.0",
+        "phpmailer/phpmailer": "^6.0"
+    },
+    "authors": [{
+        "name": "Luis Cabrera Benito",
+        "email": "parzibyte@gmail.com"
+    }],
+    "autoload": {
+        "psr-4": {
+            "Parzibyte\\": "app/"
+        }
+    }
+}

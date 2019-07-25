@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="{{URL_RAIZ}}">{{NOMBRE_APLICACION}}</a>
+    <button aria-label="Mostrar u ocultar menú" class="navbar-toggler" id="botonMenu" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="menu">
+        <ul class="navbar-nav mr-auto">
+            {% if USUARIO_LOGUEADO %}
+                {% if USUARIO_ADMIN %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ URL_RAIZ }}/usuarios">Usuarios</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ URL_RAIZ }}/notas">Notas</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ URL_RAIZ }}/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ URL_RAIZ }}/registro">Registro</a>
+                </li>
+            {% endif %}
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle " href="#" id="toggleDropdown" role="button">
+                    {{USUARIO_LOGUEADO}}
+                </a>
+                <div class="dropdown-menu" id="dropdown">
+                    <a class="dropdown-item" href="{{ URL_RAIZ }}/perfil/cambiar-password">Cambiar contraseña
+                    </a>
+                    <a class="dropdown-item" href="{{ URL_RAIZ }}/logout">Cerrar sesión</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>

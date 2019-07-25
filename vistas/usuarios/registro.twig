@@ -1,0 +1,32 @@
+{% extends "master.twig" %}
+{% block titulo %}Registro
+{% endblock %}
+{% block contenido %}
+<main class="container-fluid " role="main">
+    <div class="row">
+        <div class="col-lg-4 offset-lg-4 col-12">
+            <h2 class="text-center">Registro de usuario</h2>
+            <form method="POST" action="{{URL_RAIZ}}/usuarios/registro">
+                {% include "componentes/sesion_flash.twig" %}
+                <div class="form-group">
+                    <label for="correo">Correo electrónico</label>
+                    <input autocomplete="off" class="form-control" id="correo" name="correo" placeholder="Correo electrónico" required type="email">
+                </div>
+                <div class="form-group">
+                    <label for="palabraSecreta">Contraseña</label>
+                    <input autocomplete="off" class="form-control" id="palabraSecreta" name="palabraSecreta" placeholder="Escribe tu contraseña" required type="password">
+                </div>
+                <div class="form-group">
+                    <label for="palabraSecretaConfirm">Confirmar contraseña</label>
+                    <input autocomplete="off" class="form-control" id="palabraSecretaConfirm" name="palabraSecretaConfirm" placeholder="Vuele a escribir tu contraseña" required type="password">
+                </div>
+                <button class="btn btn-success" type="submit">Guardar</button>
+                <br>
+                <a class="h5 text-muted" href="{{URL_RAIZ}}/login">Ya tengo una cuenta</a>
+                -
+                <a class="h5 text-muted" href="{{URL_RAIZ}}/usuarios/reenviar-correo">Reenviar correo</a>
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock %}

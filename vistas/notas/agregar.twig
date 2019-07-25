@@ -1,0 +1,22 @@
+{% extends "master.twig" %}
+{% block titulo %}Agregar nota
+{% endblock %}
+{% block contenido %}
+    <main class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-sm-6">
+                <h1 class="text-center">Agregar nota</h1>
+                <form action="{{URL_RAIZ}}/notas/guardar" method="post">
+                    {% include "componentes/sesion_flash.twig" %}
+                    <div class="form-group">
+                        <label for="contenido">Contenido</label>
+                        <textarea class="form-control" cols="10" id="contenido" name="contenido" required rows="3"></textarea>
+                    </div>
+                    <button class="btn btn-success" type="submit">Guardar</button>
+                    <a class="btn btn-warning" href="{{URL_RAIZ}}/notas">Ver notas</a>
+                </form>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}
