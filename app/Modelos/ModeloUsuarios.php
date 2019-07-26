@@ -57,6 +57,8 @@ class ModeloUsuarios
     public static function agregar($correo, $palabraSecreta, $administrador = false, $cifrarPalabraSecreta = true)
     {
         $bd = BD::obtener();
+        # SQLSTATE[HY000]: General error: 1366 Incorrect integer value: '' for column 'administrador' at row 1
+        $administrador = $administrador ? 1 : 0;
         if ($cifrarPalabraSecreta) {
             $palabraSecreta = Seguridad::cifrarPalabraSecreta($palabraSecreta);
         }
