@@ -23,17 +23,19 @@
                 </li>
             {% endif %}
         </ul>
-        <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle " href="#" id="toggleDropdown" role="button">
-                    {{USUARIO_LOGUEADO}}
-                </a>
-                <div class="dropdown-menu" id="dropdown">
-                    <a class="dropdown-item" href="{{ URL_RAIZ }}/perfil/cambiar-password">Cambiar contraseña
+        {% if USUARIO_LOGUEADO %}
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle " href="#" id="toggleDropdown" role="button">
+                        {{USUARIO_LOGUEADO}}
                     </a>
-                    <a class="dropdown-item" href="{{ URL_RAIZ }}/logout">Cerrar sesión</a>
-                </div>
-            </li>
-        </ul>
+                    <div class="dropdown-menu" id="dropdown">
+                        <a class="dropdown-item" href="{{ URL_RAIZ }}/perfil/cambiar-password">Cambiar contraseña
+                        </a>
+                        <a class="dropdown-item" href="{{ URL_RAIZ }}/logout">Cerrar sesión</a>
+                    </div>
+                </li>
+            </ul>
+        {% endif %}
     </div>
 </nav>
