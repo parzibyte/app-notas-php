@@ -66,5 +66,5 @@ function parsearUrl($uri)
 {
     return implode('/',
         array_slice(
-            explode('/', $uri), 2));
+            explode('/', $uri), Comun::env("OFFSET_RUTAS")));
 }
