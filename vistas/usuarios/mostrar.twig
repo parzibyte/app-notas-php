@@ -17,6 +17,7 @@
                         <thead>
                             <tr>
                                 <th>Correo</th>
+                                <th>¿Administrador?</th>
                                 <th>Eliminar</th>
                             </tr>
                         </thead>
@@ -24,6 +25,7 @@
                             {% for usuario in usuarios %}
                                 <tr>
                                     <td>{{usuario.correo}}</td>
+                                    <td>{{usuario.administrador ? "Sí" : "No"}}</td>
                                     <td>
                                         <a class="btn btn-warning" href="{{URL_RAIZ}}/usuarios/eliminar/{{usuario.id}}">
                                             <i class="fa fa-trash"></i>

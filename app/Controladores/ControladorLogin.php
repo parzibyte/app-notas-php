@@ -18,6 +18,13 @@ class ControladorLogin
 
     public static function login()
     {
+        $v = new \Valitron\Validator($_POST);
+        $v->rule("required", ["correo", "palabraSecreta"]);
+        $v->rule("email", "correo");
+        if (!$v->validate()) {
+            SesionService::flash(["errores_formulario" => $v->errors()]);
+            redirect("/login");
+        }
         $correo = $_POST["correo"];
         $palabraSecreta = $_POST["palabraSecreta"];
         $respuesta = ModeloUsuarios::login($correo, $palabraSecreta);

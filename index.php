@@ -2,13 +2,13 @@
 require __DIR__ . '/vendor/autoload.php'; #Cargar todas las dependencias
 
 use Parzibyte\Servicios\Comun;
-use Parzibyte\Servicios\SesionService;
 use Parzibyte\Servicios\Twig;
 use Phroute\Phroute\Dispatcher;
 use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 use Phroute\Phroute\Exception\HttpRouteNotFoundException;
-use Phroute\Phroute\RouteCollector;
-
+use Valitron\Validator as V;
+V::langDir(__DIR__ . "/vendor/vlucas/valitron/lang");
+V::lang('es');
 define("DIRECTORIO_RAIZ", __DIR__);
 define("DIRECTORIO_APLICACION", DIRECTORIO_RAIZ . "/app");
 define("RUTA_LOGS", __DIR__ . DIRECTORY_SEPARATOR . "logs");
@@ -43,13 +43,24 @@ function json($datos)
     return;
 }
 
-function redirect($ruta)
+function redirect($ruta, $absoluta = false)
 {
-    header("Location: " . URL_RAIZ . $ruta);
+    $verdaderaRuta = $absoluta ? $ruta : URL_RAIZ . $ruta;
+    header("Location: " . $verdaderaRuta);
     exit;
 }
 
-$enrutador = require_once("rutas.php");
+function redirect_back()
+{
+    if (isset($_SERVER["HTTP_REFERER"])) {
+        redirect($_SERVER["HTTP_REFERER"], true);
+    } else {
+        echo '<script type="text/javascript">history.go(-1)</script>';
+        exit;
+    }
+}
+
+$enrutador = require_once "rutas.php";
 
 $despachador = new Dispatcher($enrutador->getData());
 $rutaCompleta = $_SERVER["REQUEST_URI"];

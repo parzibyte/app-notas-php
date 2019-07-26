@@ -18,16 +18,31 @@ class ControladorNotas
 
     public static function editar($idNota)
     {
-        return view("notas/editar", ["nota" => ModeloNotas::unaDeUsuario($idNota, SesionService::leer("idUsuario"))]);
+        $nota = ModeloNotas::unaDeUsuario($idNota, SesionService::leer("idUsuario"));
+        if (!$nota) {
+            redirect("/notas");
+        }
+        return view("notas/editar", ["nota" => $nota]);
     }
 
     public static function confirmarEliminacion($idNota)
     {
-        return view("notas/eliminar", ["nota" => ModeloNotas::unaDeUsuario($idNota, SesionService::leer("idUsuario"))]);
+        $nota = ModeloNotas::unaDeUsuario($idNota, SesionService::leer("idUsuario"));
+        if (!$nota) {
+            redirect("/notas");
+        }
+        return view("notas/eliminar", ["nota" => $nota]);
     }
 
     public static function guardarCambios()
     {
+        $v = new \Valitron\Validator($_POST);
+        $v->rule("required", ["idNota", "contenido"]);
+        $v->rule("numeric", "idNota");
+        if (!$v->validate()) {
+            SesionService::flash(["errores_formulario" => $v->errors()]);
+            redirect("/notas");
+        }
         $idNota = $_POST["idNota"];
         $contenido = $_POST["contenido"];
         $mensaje = "Nota guardada";
@@ -42,6 +57,12 @@ class ControladorNotas
 
     public static function eliminar()
     {
+        $v = new \Valitron\Validator($_POST);
+        $v->rule("required", "idNota");
+        if (!$v->validate()) {
+            SesionService::flash(["errores_formulario" => $v->errors()]);
+            redirect("/notas");
+        }
         $idNota = $_POST["idNota"];
         $mensaje = "Nota eliminada";
         $tipo = "success";
@@ -55,6 +76,12 @@ class ControladorNotas
 
     public static function guardar()
     {
+        $v = new \Valitron\Validator($_POST);
+        $v->rule("required", "contenido");
+        if (!$v->validate()) {
+            SesionService::flash(["errores_formulario" => $v->errors()]);
+            redirect("/notas/agregar");
+        }
         $contenido = $_POST["contenido"];
         $mensaje = "Nota agregada";
         $tipo = "success";

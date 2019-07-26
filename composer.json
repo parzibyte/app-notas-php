@@ -5,7 +5,8 @@
     "require": {
         "phroute/phroute": "^2.1",
         "twig/twig": "^2.0",
-        "phpmailer/phpmailer": "^6.0"
+        "phpmailer/phpmailer": "^6.0",
+        "vlucas/valitron": "^1.4"
     },
     "authors": [{
         "name": "Luis Cabrera Benito",
