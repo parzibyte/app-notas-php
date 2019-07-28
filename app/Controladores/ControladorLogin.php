@@ -3,7 +3,9 @@
 namespace Parzibyte\Controladores;
 
 use Parzibyte\Modelos\ModeloUsuarios;
+use Parzibyte\Redirect;
 use Parzibyte\Servicios\SesionService;
+use Parzibyte\Validator;
 
 class ControladorLogin
 {
@@ -11,35 +13,37 @@ class ControladorLogin
     public static function index()
     {
         if (SesionService::leer("idUsuario")) {
-            redirect("/usuarios");
+            Redirect::to("/usuarios")->do();
         }
         return view("login");
     }
 
     public static function login()
     {
-        $v = new \Valitron\Validator($_POST);
-        $v->rule("required", ["correo", "palabraSecreta"]);
-        $v->rule("email", "correo");
-        if (!$v->validate()) {
-            SesionService::flash(["errores_formulario" => $v->errors()]);
-            redirect("/login");
-        }
+        Validator::validateOrRedirect($_POST,
+            [
+                "required" => ["correo", "palabraSecreta"],
+                "email" => "correo",
+            ],
+            "/login");
+
         $correo = $_POST["correo"];
         $palabraSecreta = $_POST["palabraSecreta"];
         $respuesta = ModeloUsuarios::login($correo, $palabraSecreta);
         if ($respuesta) {
             redirect("/usuarios");
         } else {
-            SesionService::flash("mensaje", "Datos incorrectos");
-            SesionService::flash("tipo", "warning");
-            redirect("/login");
+            Redirect::to("/login")->with([
+                "mensaje" => "Datos incorrectos",
+                "tipo" => "warning",
+            ])
+                ->do();
         }
     }
 
     public static function logout()
     {
         SesionService::destruir();
-        redirect("/login");
+        Redirect::to("/login")->do();
     }
 }

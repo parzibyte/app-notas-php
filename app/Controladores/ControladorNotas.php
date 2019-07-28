@@ -2,7 +2,9 @@
 namespace Parzibyte\Controladores;
 
 use Parzibyte\Modelos\ModeloNotas;
+use Parzibyte\Redirect;
 use Parzibyte\Servicios\SesionService;
+use Parzibyte\Validator;
 
 class ControladorNotas
 {
@@ -20,7 +22,7 @@ class ControladorNotas
     {
         $nota = ModeloNotas::unaDeUsuario($idNota, SesionService::leer("idUsuario"));
         if (!$nota) {
-            redirect("/notas");
+            Redirect::to("/notas")->do();
         }
         return view("notas/editar", ["nota" => $nota]);
     }
@@ -29,20 +31,17 @@ class ControladorNotas
     {
         $nota = ModeloNotas::unaDeUsuario($idNota, SesionService::leer("idUsuario"));
         if (!$nota) {
-            redirect("/notas");
+            Redirect::to("/notas")->do();
         }
         return view("notas/eliminar", ["nota" => $nota]);
     }
 
     public static function guardarCambios()
     {
-        $v = new \Valitron\Validator($_POST);
-        $v->rule("required", ["idNota", "contenido"]);
-        $v->rule("numeric", "idNota");
-        if (!$v->validate()) {
-            SesionService::flash(["errores_formulario" => $v->errors()]);
-            redirect("/notas");
-        }
+        Validator::validateOrRedirect($_POST, [
+            "required" => ["idNota", "contenido"],
+            "numeric" => "idNota",
+        ]);
         $idNota = $_POST["idNota"];
         $contenido = $_POST["contenido"];
         $mensaje = "Nota guardada";
@@ -51,18 +50,15 @@ class ControladorNotas
             $mensaje = "Error guardando nota";
             $tipo = "warning";
         }
-        SesionService::flash(["tipo" => $tipo, "mensaje" => $mensaje]);
-        redirect("/notas");
+        Redirect::to("/notas")->with(["tipo" => $tipo, "mensaje" => $mensaje])->do();
     }
 
     public static function eliminar()
     {
-        $v = new \Valitron\Validator($_POST);
-        $v->rule("required", "idNota");
-        if (!$v->validate()) {
-            SesionService::flash(["errores_formulario" => $v->errors()]);
-            redirect("/notas");
-        }
+        Validator::validateOrRedirect($_POST, [
+            "required" => "idNota",
+        ],
+            "/notas");
         $idNota = $_POST["idNota"];
         $mensaje = "Nota eliminada";
         $tipo = "success";
@@ -70,18 +66,15 @@ class ControladorNotas
             $mensaje = "Error eliminando nota";
             $tipo = "warning";
         }
-        SesionService::flash(["tipo" => $tipo, "mensaje" => $mensaje]);
-        redirect("/notas");
+        Redirect::to("/notas")->with(["tipo" => $tipo, "mensaje" => $mensaje])->do();
     }
 
     public static function guardar()
     {
-        $v = new \Valitron\Validator($_POST);
-        $v->rule("required", "contenido");
-        if (!$v->validate()) {
-            SesionService::flash(["errores_formulario" => $v->errors()]);
-            redirect("/notas/agregar");
-        }
+
+        Validator::validateOrRedirect($_POST, [
+            "required" => "contenido",
+        ]);
         $contenido = $_POST["contenido"];
         $mensaje = "Nota agregada";
         $tipo = "success";
@@ -89,7 +82,6 @@ class ControladorNotas
             $mensaje = "Error agregando nota";
             $tipo = "warning";
         }
-        SesionService::flash(["tipo" => $tipo, "mensaje" => $mensaje]);
-        redirect("/notas");
+        Redirect::to("/notas")->with(["tipo" => $tipo, "mensaje" => $mensaje])->do();
     }
 }

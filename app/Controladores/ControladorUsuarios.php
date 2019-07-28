@@ -5,7 +5,9 @@ namespace Parzibyte\Controladores;
 use Parzibyte\Modelos\ModeloRestablecimientoPasswords;
 use Parzibyte\Modelos\ModeloUsuarios;
 use Parzibyte\Modelos\ModeloVerificacionesUsuarios;
+use Parzibyte\Redirect;
 use Parzibyte\Servicios\SesionService;
+use Parzibyte\Validator;
 
 class ControladorUsuarios
 {
@@ -23,7 +25,7 @@ class ControladorUsuarios
     public static function registrar()
     {
         if (SesionService::leer("idUsuario")) {
-            redirect("/notas");
+            Redirect::to("/notas")->do();
         }
         return view("usuarios/registro");
     }
@@ -40,19 +42,19 @@ class ControladorUsuarios
 
     public static function solicitarNuevaPassword()
     {
-        $v = new \Valitron\Validator($_POST);
-        $v->rule("required", "correo");
-        $v->rule("email", "correo");
-        if (!$v->validate()) {
-            SesionService::flash(["errores_formulario" => $v->errors()]);
-            redirect("/usuarios/solicitar-nueva-password");
-        }
+        Validator::validateOrRedirect($_POST,
+            [
+                "required" => "correo",
+                "email" => "correo",
+            ],
+            "/usuarios/solicitar-nueva-password");
         $correo = $_POST["correo"];
         $resultado = ModeloRestablecimientoPasswords::enviarCorreoDeRestablecimiento($correo);
         $mensaje = "Si el correo que proporcionaste existía, se han enviado instrucciones para su restablecimiento a esa dirección";
         $tipo = "info";
-        SesionService::flash(["mensaje" => $mensaje, "tipo" => $tipo]);
-        redirect("/usuarios/solicitar-nueva-password");
+        Redirect::to("/usuarios/solicitar-nueva-password")
+            ->with(["mensaje" => $mensaje, "tipo" => $tipo])
+            ->do();
     }
 
     public static function formularioRestablecerPassword($token)
@@ -62,86 +64,90 @@ class ControladorUsuarios
 
     public static function restablecerPassword()
     {
-        $v = new \Valitron\Validator($_POST);
-        $v->rule("required", ["token", "palabraSecreta", "palabraSecretaConfirm"]);
-        $v->rule("equals", "palabraSecreta", "palabraSecretaConfirm");
-        if (!$v->validate()) {
-            SesionService::flash(["errores_formulario" => $v->errors()]);
-            redirect_back();
-        }
+        Validator::validateOrRedirect($_POST, [
+            "required" => ["token", "palabraSecreta", "palabraSecretaConfirm"],
+            "equals" => [
+                ["palabraSecreta", "palabraSecretaConfirm"]
+            ],
+        ]);
         $token = $_POST["token"];
         $palabraSecreta = $_POST["palabraSecreta"];
         $palabraSecretaConfirm = $_POST["palabraSecretaConfirm"];
         $resultado = ModeloRestablecimientoPasswords::restablecer($token, $palabraSecreta);
         if ($resultado) {
-            SesionService::flash([
-                "mensaje" => "Contraseña cambiada correctamente. Ahora puedes iniciar sesión",
-                "tipo" => "success",
-            ]);
-            redirect("/login");
+            Redirect::to("/login")
+                ->with([
+                    "mensaje" => "Contraseña cambiada correctamente. Ahora puedes iniciar sesión",
+                    "tipo" => "success",
+                ])
+                ->do();
         } else {
-            SesionService::flash([
-                "mensaje" => "El token no coincide, intenta de nuevo o solicita uno nuevo",
-                "tipo" => "warning",
-            ]);
-            redirect("/usuarios/solicitar-nueva-password");
+            Redirect::to("/usuarios/solicitar-nueva-password")
+                ->with([
+                    "mensaje" => "El token no coincide, intenta de nuevo o solicita uno nuevo",
+                    "tipo" => "warning",
+                ])
+                ->do();
         }
     }
 
     public static function reenviarCorreo()
     {
-        $v = new \Valitron\Validator($_POST);
-        $v->rule("required", "correo");
-        $v->rule("email", "correo");
-        if (!$v->validate()) {
-            SesionService::flash(["errores_formulario" => $v->errors()]);
-            redirect_back();
-        }
+        Validator::validateOrRedirect($_POST,
+            [
+                "required" => "correo",
+                "email" => "correo",
+            ]);
         $correo = $_POST["correo"];
         ModeloVerificacionesUsuarios::enviarCorreoDeVerificacion($correo);
-        SesionService::flash([
-            "tipo" => "info",
-            "mensaje" => "Correcto, se ha reenviado el correo de verificación si el correo que proporcionaste estaba registrado. Verifica la bandeja de SPAM",
-        ]);
-        redirect("/usuarios/reenviar-correo");
+        Redirect::to("/usuarios/reenviar-correo")
+            ->with([
+                "tipo" => "info",
+                "mensaje" => "Correcto, se ha reenviado el correo de verificación si el correo que proporcionaste estaba registrado. Verifica la bandeja de SPAM",
+            ])
+            ->do();
     }
 
     public static function verificar($token)
     {
         if (ModeloVerificacionesUsuarios::verificarPorToken($token)) {
-            SesionService::flash([
+
+            Redrect::with([
                 "mensaje" => "Verificado correctamente. Ya puedes iniciar sesión",
                 "tipo" => "success",
-            ]);
-            redirect("/login");
+            ])
+                ->to("/login")
+                ->do();
         } else {
-            SesionService::flash([
+            Redirect::with([
                 "mensaje" => "Error verificando. Token inválido.",
                 "tipo" => "danger",
-            ]);
-            redirect("/registro");
+            ])
+                ->to("/registro")
+                ->do();
         }
     }
 
     public static function guardar()
     {
-        $v = new \Valitron\Validator($_POST);
-        $v->rule("required", ["correo", "palabraSecreta", "palabraSecretaConfirm"]);
-        $v->rule("equals", "palabraSecreta", "palabraSecretaConfirm");
-        if (!$v->validate()) {
-            SesionService::flash(["errores_formulario" => $v->errors()]);
-            redirect_back();
-        }
+        Validator::validateOrRedirect($_POST,
+            [
+                "required" => ["correo", "palabraSecreta", "palabraSecretaConfirm"],
+                "equals" => [
+                    ["palabraSecreta", "palabraSecretaConfirm"],
+                ],
+            ]);
         $correo = $_POST["correo"];
         $palabraSecreta = $_POST["palabraSecreta"];
         $administrador = isset($_POST["administrador"]);
         $palabraSecretaConfirm = $_POST["palabraSecretaConfirm"];
         if (ModeloUsuarios::unoPorCorreo($correo)) {
-            SesionService::flash([
+            Redirect::with([
                 "mensaje" => "El correo que intentas registrar ya existe",
                 "tipo" => "warning",
-            ]);
-            redirect_back();
+            ])
+                ->back()
+                ->do();
         }
         $resultado = ModeloUsuarios::agregar($correo, $palabraSecreta, $administrador);
         $mensaje = "Usuario guardado correctamente";
@@ -150,39 +156,42 @@ class ControladorUsuarios
             $mensaje = "Error al insertar. Intente de nuevo";
             $tipo = "danger";
         }
-        SesionService::flash([
+        Redirect::with([
             "mensaje" => $mensaje,
             "tipo" => $tipo,
-        ]);
-        redirect("/usuarios/agregar");
+        ])
+            ->to("/usuarios/agregar")
+            ->do();
     }
 
     public static function registro()
     {
-        $v = new \Valitron\Validator($_POST);
-        $v->rule("required", ["correo", "palabraSecreta", "palabraSecretaConfirm"]);
-        $v->rule("equals", "palabraSecreta", "palabraSecretaConfirm");
-        if (!$v->validate()) {
-            SesionService::flash(["errores_formulario" => $v->errors()]);
-            redirect_back();
-        }
+        Validator::validateOrRedirect($_POST,
+            [
+                "required" => ["correo", "palabraSecreta", "palabraSecretaConfirm"],
+                "equals" => [
+                    ["palabraSecreta", "palabraSecretaConfirm"],
+                ],
+            ]);
         $correo = $_POST["correo"];
         $palabraSecreta = $_POST["palabraSecreta"];
         $palabraSecretaConfirm = $_POST["palabraSecretaConfirm"];
         if (ModeloVerificacionesUsuarios::obtenerUsuarioPorCorreo($correo)) {
-            SesionService::flash([
+            Redirect::with([
                 "mensaje" => "El correo que intentas registrar ya ha sido registrado anteriormente, pero no ha sido confirmado",
                 "tipo" => "warning",
-            ]);
-            redirect("/registro");
+            ])
+                ->to("/registro")
+                ->do();
         }
 
         if (ModeloUsuarios::existePorCorreo($correo)) {
-            SesionService::flash([
+            Redirect::with([
                 "mensaje" => "El correo ya está en uso por otro usuario",
                 "tipo" => "warning",
-            ]);
-            redirect("/registro");
+            ])
+                ->to("/registro")
+                ->do();
         }
 
         $resultado = ModeloVerificacionesUsuarios::registrarUsuarioNoVerificado($correo, $palabraSecreta);
@@ -197,11 +206,12 @@ class ControladorUsuarios
                 $tipo = "danger";
             }
         }
-        SesionService::flash([
-            "mensaje" => $mensaje,
-            "tipo" => $tipo,
-        ]);
-        redirect("/registro");
+        Redirect::to("/registro")
+            ->with([
+                "mensaje" => $mensaje,
+                "tipo" => $tipo,
+            ])
+            ->do();
     }
 
     public static function perfilCambiarPassword()
@@ -217,13 +227,11 @@ class ControladorUsuarios
 
     public static function eliminar()
     {
-        $v = new \Valitron\Validator($_POST);
-        $v->rule("required", "idUsuario");
-        $v->rule("numeric", "idUsuario");
-        if (!$v->validate()) {
-            SesionService::flash(["errores_formulario" => $v->errors()]);
-            redirect_back();
-        }
+        Validator::validateOrRedirect($_POST,
+            [
+                "required" => "idUsuario",
+                "numeric" => "idUsuario",
+            ]);
         $idUsuario = $_POST["idUsuario"];
         ModeloUsuarios::eliminarSesiones($idUsuario);
         $resultado = ModeloUsuarios::eliminar($idUsuario);
@@ -233,19 +241,20 @@ class ControladorUsuarios
             $mensaje = "Error eliminando";
             $tipo = "danger";
         }
-        SesionService::flash(["mensaje" => $mensaje, "tipo" => $tipo]);
-        redirect("/usuarios");
+        Redirect::to("/usuarios")
+            ->with(["mensaje" => $mensaje, "tipo" => $tipo])
+            ->do();
     }
 
     public static function perfilGuardarPassword()
     {
-        $v = new \Valitron\Validator($_POST);
-        $v->rule("required", ["palabraSecreta", "palabraSecretaConfirm", "palabraSecretaActual"]);
-        $v->rule("equals", "palabraSecreta", "palabraSecretaConfirm");
-        if (!$v->validate()) {
-            SesionService::flash(["errores_formulario" => $v->errors()]);
-            redirect_back();
-        }
+        Validator::validateOrRedirect($_POST,
+            [
+                "required" => ["palabraSecreta", "palabraSecretaConfirm", "palabraSecretaActual"],
+                "equals" => [
+                    ["palabraSecreta", "palabraSecretaConfirm"],
+                ],
+            ]);
         $palabraSecreta = $_POST["palabraSecreta"];
         $palabraSecretaConfirm = $_POST["palabraSecretaConfirm"];
         $palabraSecretaActual = $_POST["palabraSecretaActual"];
@@ -253,9 +262,9 @@ class ControladorUsuarios
         $idUsuario = SesionService::leer("idUsuario");
 
         if (!ModeloUsuarios::coincideUsuarioYPassPorId($idUsuario, $palabraSecretaActual)) {
-            SesionService::flash(["mensaje" => "La contraseña actual no coincide", "tipo" => "warning"]);
-            redirect("/perfil/cambiar-password/");
-
+            Redirect::with(["mensaje" => "La contraseña actual no coincide", "tipo" => "warning"])
+                ->to("/perfil/cambiar-password/")
+                ->do();
         }
 
         $resultado = ModeloUsuarios::cambiarPalabraSecreta($idUsuario, $palabraSecreta);
@@ -265,7 +274,8 @@ class ControladorUsuarios
             $mensaje = "Error actualizando contraseña";
             $tipo = "warning";
         }
-        SesionService::flash(["mensaje" => $mensaje, "tipo" => $tipo]);
-        redirect("/perfil/cambiar-password");
+        Redirect::with(["mensaje" => $mensaje, "tipo" => $tipo])
+            ->to("/perfil/cambiar-password")
+            ->do();
     }
 }
