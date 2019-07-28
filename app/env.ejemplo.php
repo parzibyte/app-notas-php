@@ -34,3 +34,5 @@ HOST_MYSQL = "localhost"
 OFFSET_RUTAS = 2
 HABILITAR_CACHE_TWIG = false
 RUTA_CACHE_TWIG = "cache_twig"
+DIRECCION_CORREO_REMITENTE = "tu_direccion@dominio.com"
+NOMBRE_REMITENTE = "Nombre del remitente"
