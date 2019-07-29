@@ -31,7 +31,7 @@ class ControladorLogin
         $palabraSecreta = $_POST["palabraSecreta"];
         $respuesta = ModeloUsuarios::login($correo, $palabraSecreta);
         if ($respuesta) {
-            redirect("/usuarios");
+            Redirect::to("/usuarios")->do();
         } else {
             Redirect::to("/login")->with([
                 "mensaje" => "Datos incorrectos",

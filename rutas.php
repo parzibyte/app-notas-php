@@ -6,13 +6,13 @@ $enrutador = new RouteCollector();
 
 $enrutador->filter("logueado", function () {
     if (empty(SesionService::leer("correoUsuario"))) {
-        return redirect("/login");
+        return Redirect::to("/login")->do();
     }
 });
 
 $enrutador->filter("administrador", function () {
     if (!SesionService::leer("administrador") || !SesionService::leer("idUsuario")) {
-        return redirect("/notas");
+        return Redirect::to("/notas")->do();
     }
 });
 

@@ -43,23 +43,6 @@ function json($datos)
     return;
 }
 
-function redirect($ruta, $absoluta = false)
-{
-    $verdaderaRuta = $absoluta ? $ruta : URL_RAIZ . $ruta;
-    header("Location: " . $verdaderaRuta);
-    exit;
-}
-
-function redirect_back()
-{
-    if (isset($_SERVER["HTTP_REFERER"])) {
-        redirect($_SERVER["HTTP_REFERER"], true);
-    } else {
-        echo '<script type="text/javascript">history.go(-1)</script>';
-        exit;
-    }
-}
-
 $enrutador = require_once "rutas.php";
 
 $despachador = new Dispatcher($enrutador->getData());
